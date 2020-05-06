@@ -252,6 +252,22 @@ function ConvertTo-AppParameters {
 }
 
 #### SCRIPT START ####
+if(Test-Path -path C:\complete) { exit }
+
+# Intialize Networking
+# Acquire additional network information for a later stage.
+$NetworkDefaultInterface = (
+  Get-NetIPConfiguration | 
+  Where-Object {
+    $_.IPv4DefaultGateway -ne $null -and
+    $_.NetAdapter.Status -ne "Disconnected"
+  }
+)
+$NetworkDefaultGateway = $NetworkDefaultInterface.IPv4DefaultGateway.NextHop
+$NetworkHostIpAddress = $NetworkDefaultInterface.IPv4Address.IPAddress
+$env:NetworkHostIpAddress = $NetworkHostIpAddress
+
+route ADD 169.254.169.254 MASK 255.255.255.255 $NetworkDefaultGateway /p
 
 # Pull down our instance's tags.
 $InstanceId = (wget "http://$script:AWSSelfServiceUri/meta-data/instance-id" -UseBasicParsing).Content
@@ -331,18 +347,6 @@ $env:KubeClusterDns = $KubeClusterDns
 $env:KubeClusterInternalApi = $KubeClusterInternalApi
 $env:KubeDnsDomain = $KubeDnsDomain
 $env:KubeServiceCidr = $KubeServiceCidr
-
-# Acquire additional network information for a later stage.
-$NetworkDefaultInterface = (
-  Get-NetIPConfiguration | 
-  Where-Object {
-    $_.IPv4DefaultGateway -ne $null -and
-    $_.NetAdapter.Status -ne "Disconnected"
-  }
-)
-$NetworkDefaultGateway = $NetworkDefaultInterface.IPv4DefaultGateway.NextHop
-$NetworkHostIpAddress = $NetworkDefaultInterface.IPv4Address.IPAddress
-$env:NetworkHostIpAddress = $NetworkHostIpAddress
 
 # Get taints and role from the cluster specification.
 #$NodeTaints = @(Get-NodeTaintsFromTags)
@@ -527,4 +531,4 @@ nssm start kube-proxy
 kubectl --kubeconfig="$KubernetesDirectory/kconfigs/kubelet.kcfg" taint nodes $env:NODE_NAME "node.kubernetes.io/NotReady-"
 
 # Mark our machine as being fully ready.
-[System.Environment]::SetEnvironmentVariable('KOPS_NODE_STATE', "ready", [System.EnvironmentVariableTarget]::Machine)
+New-Item -Path C:\ -Name "complete" -ItemType "file" -Value "Finished initialization"
