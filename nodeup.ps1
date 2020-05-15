@@ -173,7 +173,8 @@ function Update-CniConfigurationFile {
             "Type"="OutBoundNAT"
             "ExceptionList"=@(
               $KubeClusterCidr,
-              $KubeServiceCidr            )
+              $KubeServiceCidr
+              )
           }
         },
         @{
