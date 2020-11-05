@@ -66,15 +66,6 @@ mkdir -force C:\var\lib\kubelet\etc\kubernetes
 mkdir -force C:\etc\kubernetes\pki
 New-Item -path C:\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value C:\etc\kubernetes\pki\
 
-$StartKubeletFileContent = '$FileContent = Get-Content -Path "/var/lib/kubelet/kubeadm-flags.env"
-$global:KubeletArgs = $FileContent.Trim("KUBELET_KUBEADM_ARGS=`"")
-
-$netId = docker network ls -f name=host --format "{{ .ID }}"
-
-if ($netId.Length -lt 1) {
-    docker network create -d nat host
-}'
-
 Write-Host "Installing nssm"
 $arch = "win32"
 if ([Environment]::Is64BitOperatingSystem) {
