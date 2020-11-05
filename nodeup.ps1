@@ -477,7 +477,7 @@ $KubeletArguments = @{
   "register-schedulable"="true";
   "register-with-taints"="$NodeTaints";
   "resolv-conf"="";
-  "v"="6"
+  "v"="1"
 }
 
 $FlannelArguments = @{
@@ -488,7 +488,7 @@ $FlannelArguments = @{
 }
 
 $KubeProxyArguments = @{
-  "v"="4";
+  "v"="1";
   "cluster-cidr"="$env:KubeServiceCidr";
   "enable-dsr"="false";
   "feature-gates"="""WinOverlay=true""";
