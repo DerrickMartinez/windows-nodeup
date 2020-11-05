@@ -353,12 +353,12 @@ $env:KubeServiceCidr = $KubeServiceCidr
 
 # Add our own labels and taints.
 $NodeLabels += @(
-  "beta.kubernetes.io/os=windows",
+  "kubernetes.io/os=windows",
   "node.kubernetes.io/exclude-from-external-load-balancers=1"
 )
 
 $NodeTaints += @(
-  "beta.kubernetes.io/os=windows:NoSchedule"
+  "kubernetes.io/os=windows:NoSchedule"
 )
 
 # Initially mark the node with NotReady taint.
